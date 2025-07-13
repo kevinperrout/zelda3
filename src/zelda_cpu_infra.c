@@ -317,6 +317,7 @@ static void RunEmulatedSnesFrame(Snes *snes, int run_what) {
 // Copy state into the emulator, we can skip dsp/apu because 
 // we're not emulating that.
 static void EmuSynchronizeWholeState() {
+#ifndef __vita__
   *g_snes->ppu = *g_zenv.ppu;
   memcpy(g_snes->ram, g_zenv.ram, 0x20000);
   memcpy(g_snes->cart->ram, g_zenv.sram, 0x2000);
@@ -325,9 +326,11 @@ static void EmuSynchronizeWholeState() {
   // todo: this is hacky
   if (animated_tile_data_src == 0)
     cpu_reset(g_snes->cpu);
+#endif
 }
 
 void EmuRunFrameWithCompare(uint16 input_state, int run_what) {
+#ifndef __vita__
   MakeSnapshot(&g_snapshot_before);
   MakeMySnapshot(&g_snapshot_mine);
   MakeSnapshot(&g_snapshot_theirs);
@@ -345,11 +348,11 @@ again_theirs:
   g_snes->input1->currentState = input_state;
   RunEmulatedSnesFrame(g_snes, run_what);
   MakeSnapshot(&g_snapshot_theirs);
-
+#endif
   // Run my version and snapshot
 again_mine:
   ZeldaRunFrameInternal(input_state, run_what);
-
+#ifndef __vita__
   MakeMySnapshot(&g_snapshot_mine);
 
   // Compare both snapshots
@@ -370,6 +373,7 @@ again_mine:
       RestoreMySnapshot(&g_snapshot_theirs);
     }
   }
+#endif
 }
 
 
@@ -579,7 +583,10 @@ bool EmuInitialize(uint8 *data, size_t size) {
   PatchRom(data);
   g_snes = snes_init(g_emulated_ram);
   g_cpu = g_snes->cpu;
-
+#ifdef __vita__
+  ZeldaSetupEmuCallbacks(g_emulated_ram, NULL, NULL);
+#else
   ZeldaSetupEmuCallbacks(g_emulated_ram, &EmuRunFrameWithCompare, &EmuSynchronizeWholeState);
+#endif
   return snes_loadRom(g_snes, data, (int)size);
 }

@@ -386,8 +386,9 @@ void ZeldaReset(bool preserve_sram) {
   ZeldaApuLock();
   ZeldaRestoreMusicAfterLoad_Locked(true);
   ZeldaApuUnlock();
+#ifndef __vita__
   EmuSynchronizeWholeState();
-
+#endif
 }
 
 static void LoadSnesState(SaveLoadFunc *func, void *ctx) {
@@ -398,7 +399,9 @@ static void LoadSnesState(SaveLoadFunc *func, void *ctx) {
 
   ZeldaRestoreMusicAfterLoad_Locked(false);
   ZeldaApuUnlock();
+#ifndef __vita__
   EmuSynchronizeWholeState();
+#endif
 }
 
 static void SaveSnesState(SaveLoadFunc *func, void *ctx) {
