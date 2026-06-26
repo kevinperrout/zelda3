@@ -54,6 +54,15 @@ Visit Wiki for more info on building the project: https://github.com/snesrev/zel
 5. Download [TCC](https://github.com/FitzRoyX/tinycc/releases/download/tcc_20221020/tcc_20221020.zip) and extract to the "\third_party" subfolder
 6. Download [SDL2](https://github.com/libsdl-org/SDL/releases/download/release-2.26.3/SDL2-devel-2.26.3-VC.zip) and extract to the "\third_party" subfolder
 7. Double-click `run_with_tcc.bat` in the main dir to create `zelda3.exe` in that same dir
+   
+    Optionally, run:
+
+    ```bat
+    run_with_tcc.bat --no-console
+    ```
+
+    to build the executable without a console window.
+
 8. Configure with `zelda3.ini` in the main dir
 
 ## Compiling on Windows with Visual Studio (4.5gb IDE and compiler)

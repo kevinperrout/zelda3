@@ -36,9 +36,27 @@ IF NOT EXIST "zelda3_assets.dat" (
   REM
 )
 
+set SUBSYSTEM=
 
+:parseArgs
+if "%~1"=="" goto build
+
+if /I "%~1"=="--no-console" (
+    set SUBSYSTEM=-Wl,-subsystem=windows
+    shift
+    goto parseArgs
+)
+
+echo WARNING: Unknown option "%~1" - ignoring and using default settings.
+echo.
+shift
+goto parseArgs
+
+:build
 echo Building with TCC...
-third_party\tcc\tcc.exe -ozelda3.exe -DCOMPILER_TCC=1 -DSTBI_NO_SIMD=1 -DHAVE_STDINT_H=1 -D_HAVE_STDINT_H=1 -DSYSTEM_VOLUME_MIXER_AVAILABLE=0 -I%SDL2%/include -L%SDL2%/lib/x64 -lSDL2 -I. src/*.c snes/*.c third_party/gl_core/gl_core_3_1.c third_party/opus-1.3.1-stripped/opus_decoder_amalgam.c
+
+third_party\tcc\tcc.exe %SUBSYSTEM% -ozelda3.exe -DCOMPILER_TCC=1 -DSTBI_NO_SIMD=1 -DHAVE_STDINT_H=1 -D_HAVE_STDINT_H=1 -DSYSTEM_VOLUME_MIXER_AVAILABLE=0 -I%SDL2%/include -L%SDL2%/lib/x64 -lSDL2 -I. src/*.c snes/*.c third_party/gl_core/gl_core_3_1.c third_party/opus-1.3.1-stripped/opus_decoder_amalgam.c
+
 IF ERRORLEVEL 1 goto GETOUT
 
 copy %SDL2%\lib\x64\SDL2.dll .
