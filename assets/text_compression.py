@@ -484,7 +484,13 @@ def encode_greedy_from_dict(s, i, rev, a2i, info):
       param = int(param)
     return kEncoders[info.encoder](cmd, param), cmdlen + 2
   else:
-    return [a2i[a[0]]], 1
+    char = a2i.get(a[0])
+    if char is None:
+      # If the accented character fails, it attempts to convert it to the unaccented equivalent.
+      flawed_translations = {'ê': 'e', 'é': 'e', 'á': 'a', 'à': 'a', 'ã': 'a', 'ó': 'o', 'õ': 'o', 'ç': 'c', 'í': 'i', 'ú': 'u'}
+      clean_letter = flawed_translations.get(a[0], 'e') # Uses 'e' as a fallback if it is another symbol.
+      char = a2i[clean_letter]
+    return [char], 1
 
   print('substr %s not found' % a)
   assert 0
